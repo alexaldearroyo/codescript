@@ -1,44 +1,54 @@
 #!/bin/bash
 
 OUTPUT_TO_FILE=false
-TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/tempfile.codescript.txt")
+OUTPUT_FILENAME="file_list.txt"
 
-# Function to print the content of a file
+
+# Eliminar el archivo file_list.txt si existe
+rm -f "$OUTPUT_FILENAME"
+
+# Función para imprimir el contenido de un archivo
 print_file_content() {
     local file="$1"
-    echo "$file:" >> "$TEMP_FILE"
-    echo "" >> "$TEMP_FILE"
-    cat "$file" >> "$TEMP_FILE"
-    echo "" >> "$TEMP_FILE"
-    echo "----------------------------------------" >> "$TEMP_FILE"
-    echo "" >> "$TEMP_FILE"
+    if $OUTPUT_TO_FILE; then
+        echo "$file:" >> "$OUTPUT_FILENAME"
+        echo "" >> "$OUTPUT_FILENAME"
+        cat "$file" >> "$OUTPUT_FILENAME"
+        echo "" >> "$OUTPUT_FILENAME"
+        echo "----------------------------------------" >> "$OUTPUT_FILENAME"
+        echo "" >> "$OUTPUT_FILENAME"
+    else
+        echo "$file:"
+        echo ""
+        cat "$file"
+        echo ""
+        echo "----------------------------------------"
+        echo ""
+    fi
 }
 
-# Check if the -o option was provided
+# Verificar si se proporcionó la opción -o
 if [[ "$1" == "-o" ]]; then
     OUTPUT_TO_FILE=true
-    shift  # Remove the -o option from the arguments
+    shift  # Eliminar la opción -o de los argumentos
 fi
 
-# Iterate over all provided arguments
+# Iterar sobre todos los argumentos proporcionados
 for entry in "$@"; do
-    # If the entry is a directory, search for files within
+    # Si la entrada es un directorio, buscar archivos dentro
     if [[ -d $entry ]]; then
         for file in $(find "$entry" -type f); do
             print_file_content "$file"
         done
-    # If the entry is a file, print its content
+    # Si la entrada es un archivo, imprimir su contenido
     elif [[ -f $entry ]]; then
         print_file_content "$entry"
     else
-        echo "The entry $entry does not exist or is not recognized."
+        echo "La entrada $entry no existe o no es reconocida."
     fi
 done
 
-# If the -o option was used, open the output file
+# Si se usó la opción -o, abrir el archivo de salida
 if $OUTPUT_TO_FILE; then
-    open "$TEMP_FILE"
-    # Wait for the user to close the text editor
-    wait
-    rm -f "$TEMP_FILE"
+    open "$OUTPUT_FILENAME"
 fi
