@@ -1,50 +1,44 @@
 #!/bin/bash
 
 OUTPUT_TO_FILE=false
-OUTPUT_FILENAME="file_list.txt"
+TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/tempfile.codescript.txt")
 
-# Función para imprimir el contenido de un archivo
+# Function to print the content of a file
 print_file_content() {
     local file="$1"
-    if $OUTPUT_TO_FILE; then
-        echo "$file:" >> "$OUTPUT_FILENAME"
-        echo "" >> "$OUTPUT_FILENAME"
-        cat "$file" >> "$OUTPUT_FILENAME"
-        echo "" >> "$OUTPUT_FILENAME"
-        echo "----------------------------------------" >> "$OUTPUT_FILENAME"
-        echo "" >> "$OUTPUT_FILENAME"
-    else
-        echo "$file:"
-        echo ""
-        cat "$file"
-        echo ""
-        echo "----------------------------------------"
-        echo ""
-    fi
+    echo "$file:" >> "$TEMP_FILE"
+    echo "" >> "$TEMP_FILE"
+    cat "$file" >> "$TEMP_FILE"
+    echo "" >> "$TEMP_FILE"
+    echo "----------------------------------------" >> "$TEMP_FILE"
+    echo "" >> "$TEMP_FILE"
 }
 
-# Verificar si se proporcionó la opción -o
+# Check if the -o option was provided
 if [[ "$1" == "-o" ]]; then
     OUTPUT_TO_FILE=true
-    shift  # Eliminar la opción -o de los argumentos
+    shift  # Remove the -o option from the arguments
 fi
 
-# Iterar sobre todos los argumentos proporcionados
+# Iterate over all provided arguments
 for entry in "$@"; do
-    # Si la entrada es un directorio, buscar archivos dentro
+    # If the entry is a directory, search for files within
     if [[ -d $entry ]]; then
         for file in $(find "$entry" -type f); do
             print_file_content "$file"
         done
-    # Si la entrada es un archivo, imprimir su contenido
+    # If the entry is a file, print its content
     elif [[ -f $entry ]]; then
         print_file_content "$entry"
     else
-        echo "La entrada $entry no existe o no es reconocida."
+        echo "The entry $entry does not exist or is not recognized."
     fi
 done
 
-# Si se usó la opción -o, abrir el archivo de salida
+# If the -o option was used, open the output file
 if $OUTPUT_TO_FILE; then
-    open "$OUTPUT_FILENAME"
+    open "$TEMP_FILE"
+    # Wait for the user to close the text editor
+    wait
+    rm -f "$TEMP_FILE"
 fi
