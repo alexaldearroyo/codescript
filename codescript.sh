@@ -1,7 +1,7 @@
 #!/bin/bash
 
 OUTPUT_TO_FILE=false
-OUTPUT_FILENAME="file_list.txt"
+OUTPUT_FILENAME="$(pwd)/file_list.txt"
 
 
 # Eliminar el archivo file_list.txt si existe
