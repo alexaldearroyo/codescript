@@ -2,7 +2,7 @@
 
 OUTPUT_FILENAME="$(pwd)/temp_codescript.txt"
 
-# Eliminar el archivo file_list.txt si existe
+# Eliminar el archivo temp_codescript.txt si existe
 rm -f "$OUTPUT_FILENAME"
 
 OUTPUT_TO_FILE=false
@@ -50,5 +50,7 @@ done
 
 # Si se usó la opción -o, abrir el archivo de salida
 if $OUTPUT_TO_FILE; then
+    sync  # Asegurarse de que todos los datos se han escrito en el disco
+    sleep 1  # Esperar un segundo (opcional)
     open "$OUTPUT_FILENAME"
 fi
