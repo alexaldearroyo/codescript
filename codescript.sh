@@ -1,11 +1,11 @@
 #!/bin/bash
 
-OUTPUT_TO_FILE=false
-OUTPUT_FILENAME="$(pwd)/file_list.txt"
-
+OUTPUT_FILENAME="$(pwd)/temp_codescript.txt"
 
 # Eliminar el archivo file_list.txt si existe
 rm -f "$OUTPUT_FILENAME"
+
+OUTPUT_TO_FILE=false
 
 # Función para imprimir el contenido de un archivo
 print_file_content() {
