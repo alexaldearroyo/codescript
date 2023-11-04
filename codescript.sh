@@ -2,6 +2,10 @@
 
 OUTPUT_FILENAME="$(pwd)/temp_codescript.txt"
 
+# Intentar cerrar el visor de texto que tiene abierto temp_codescript.txt
+lsof +D "$(dirname "$OUTPUT_FILENAME")" | grep $(basename "$OUTPUT_FILENAME") | awk '{print $2}' | uniq | xargs -r kill
+
+
 # Eliminar el archivo temp_codescript.txt si existe
 rm -f "$OUTPUT_FILENAME"
 
